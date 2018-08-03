@@ -88,6 +88,62 @@ cat /root/pvs/* | oc create -f -
 ansible nodes -m shell -a "docker pull registry.access.redhat.com/openshift3/ose-recycler:latest"
 ansible nodes -m shell -a "docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v3.9.30"
 
+#NetworkPolicy time!
+
+#We start in multitenant mode. Switch over like so: 
+sed sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /inventory/hosts
+ansible masters -m shell -a "sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /etc/origin/master/master-config.yaml"
+ansible nodes -m shell -a "sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /etc/origin/node/node-config.yaml"
+
+# stop openshift
+ansible masters -m shell  -a"systemctl stop atomic-openshift-master-api"
+ansible masters -m shell -a"systemctl stop atomic-openshift-master-controllers"
+ansible nodes -m shell -a"systemctl stop atomic-openshift-node"
+ansible nodes -m shell -a"systemctl stop docker"
+
+ansible nodes -m shell -a"systemctl restart openvswitch"
+
+ansible nodes -m shell -a"systemctl start docker"
+ansible masters -m shell -a"systemctl start atomic-openshift-master-api"
+ansible masters -m shell -a"systemctl start atomic-openshift-master-controllers"
+
+ansible masters -m shell -a"systemctl start atomic-openshift-node" # (make sure masters are up before nodes)
+
+ansible nodes -m shell -a"systemctl start atomic-openshift-node"
+
+# #default deny all traffic
+# echo 'kind: NetworkPolicy
+# apiVersion: networking.k8s.io/v1
+# metadata:
+#   name: deny-by-default
+# spec:
+#   podSelector:
+#   ingress: []'
+
+# #allow traffic between pods in the same namespace
+# echo 'kind: NetworkPolicy
+# apiVersion: networking.k8s.io/v1
+# metadata:
+#   name: allow-same-namespace
+# spec:
+#   podSelector:
+#   ingress:
+#   - from:
+#     - podSelector: {}' | oc create -f -
+
+# #allow traffic from default (for routers, etc)
+#  echo 'kind: NetworkPolicy
+# apiVersion: networking.k8s.io/v1
+# metadata:
+#   name: allow-from-default-namespace
+# spec:
+#   podSelector:
+#   ingress:
+#   - from:
+#     - namespaceSelector:
+#         matchLabels:
+#           name: default' | oc create -f -
+
 #test out app creation
 oc new-project smoke-test
 oc new-app nodejs-mongo-persistent
