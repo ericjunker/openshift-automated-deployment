@@ -26,9 +26,9 @@ openshift_master_api_port=443
 openshift_master_console_port=443
 
 openshift_master_cluster_method=native
-openshift_master_cluster_hostname=loadbalancer1.c77b.internal
-openshift_master_cluster_public_hostname=loadbalancer1.c77b.example.opentlc.com
-openshift_master_default_subdomain=apps.c77b.example.opentlc.com
+openshift_master_cluster_hostname=loadbalancer1.$GUID.internal
+openshift_master_cluster_public_hostname=loadbalancer1.$GUID.example.opentlc.com
+openshift_master_default_subdomain=apps.$GUID.example.opentlc.com
 #openshift_master_ca_certificate={'certfile': '/root/intermediate_ca.crt', 'keyfile': '/root/intermediate_ca.key'}
 openshift_master_overwrite_named_certificates=True
 
@@ -126,7 +126,7 @@ openshift_logging_storage_volume_name=logging
 openshift_logging_storage_volume_size=10Gi
 openshift_logging_storage_labels={'storage': 'logging'}
 
-# openshift_logging_kibana_hostname=kibana.apps.c77b.example.opentlc.com
+# openshift_logging_kibana_hostname=kibana.apps.$GUID.example.opentlc.com
 openshift_logging_es_cluster_size=1
 
 openshift_logging_es_nodeselector={"env":"infra"}
@@ -185,42 +185,42 @@ nfs
 #glusterfs
 
 [lb]
-loadbalancer1.c77b.internal
+loadbalancer1.$GUID.internal
 
 [masters]
-master1.c77b.internal
-master2.c77b.internal
-master3.c77b.internal
+master1.$GUID.internal
+master2.$GUID.internal
+master3.$GUID.internal
 
 [etcd]
-master1.c77b.internal
-master2.c77b.internal
-master3.c77b.internal
+master1.$GUID.internal
+master2.$GUID.internal
+master3.$GUID.internal
 
 [nodes]
 ## These are the masters
-master1.c77b.internal openshift_hostname=master1.c77b.internal openshift_node_labels="{'env':'master', 'cluster': 'c77b'}"
-master2.c77b.internal openshift_hostname=master2.c77b.internal openshift_node_labels="{'env':'master', 'cluster': 'c77b'}"
-master3.c77b.internal openshift_hostname=master3.c77b.internal openshift_node_labels="{'env':'master', 'cluster': 'c77b'}"
+master1.$GUID.internal openshift_hostname=master1.$GUID.internal openshift_node_labels="{'env':'master', 'cluster': '$GUID'}"
+master2.$GUID.internal openshift_hostname=master2.$GUID.internal openshift_node_labels="{'env':'master', 'cluster': '$GUID'}"
+master3.$GUID.internal openshift_hostname=master3.$GUID.internal openshift_node_labels="{'env':'master', 'cluster': '$GUID'}"
 
 ## These are infranodes
-infranode1.c77b.internal openshift_hostname=infranode1.c77b.internal  openshift_node_labels="{'env':'infra', 'cluster': 'c77b'}"
-infranode2.c77b.internal openshift_hostname=infranode2.c77b.internal  openshift_node_labels="{'env':'infra', 'cluster': 'c77b'}"
+infranode1.$GUID.internal openshift_hostname=infranode1.$GUID.internal  openshift_node_labels="{'env':'infra', 'cluster': '$GUID'}"
+infranode2.$GUID.internal openshift_hostname=infranode2.$GUID.internal  openshift_node_labels="{'env':'infra', 'cluster': '$GUID'}"
 
 ## These are regular nodes
-node1.c77b.internal openshift_hostname=node1.c77b.internal  openshift_node_labels="{'env':'app', 'cluster': 'c77b'}"
-node2.c77b.internal openshift_hostname=node2.c77b.internal  openshift_node_labels="{'env':'app', 'cluster': 'c77b'}"
-node3.c77b.internal openshift_hostname=node3.c77b.internal  openshift_node_labels="{'env':'app', 'cluster': 'c77b'}"
+node1.$GUID.internal openshift_hostname=node1.$GUID.internal  openshift_node_labels="{'env':'app', 'cluster': '$GUID'}"
+node2.$GUID.internal openshift_hostname=node2.$GUID.internal  openshift_node_labels="{'env':'app', 'cluster': '$GUID'}"
+node3.$GUID.internal openshift_hostname=node3.$GUID.internal  openshift_node_labels="{'env':'app', 'cluster': '$GUID'}"
 
 ## These are CNS nodes
-# support1.c77b.internal openshift_hostname=support1.c77b.internal  openshift_node_labels="{'env':'glusterfs', 'cluster': 'c77b'}"
-# support2.c77b.internal openshift_hostname=support2.c77b.internal  openshift_node_labels="{'env':'glusterfs', 'cluster': 'c77b'}"
-# support3.c77b.internal openshift_hostname=support3.c77b.internal  openshift_node_labels="{'env':'glusterfs', 'cluster': 'c77b'}"
+# support1.$GUID.internal openshift_hostname=support1.$GUID.internal  openshift_node_labels="{'env':'glusterfs', 'cluster': '$GUID'}"
+# support2.$GUID.internal openshift_hostname=support2.$GUID.internal  openshift_node_labels="{'env':'glusterfs', 'cluster': '$GUID'}"
+# support3.$GUID.internal openshift_hostname=support3.$GUID.internal  openshift_node_labels="{'env':'glusterfs', 'cluster': '$GUID'}"
 
 [nfs]
-support1.c77b.internal openshift_hostname=support1.c77b.internal
+support1.$GUID.internal openshift_hostname=support1.$GUID.internal
 
 #[glusterfs]
-# support1.c77b.internal glusterfs_devices='[ "/dev/xvdd" ]'
-# support2.c77b.internal glusterfs_devices='[ "/dev/xvdd" ]'
-# support3.c77b.internal glusterfs_devices='[ "/dev/xvdd" ]'
+# support1.$GUID.internal glusterfs_devices='[ "/dev/xvdd" ]'
+# support2.$GUID.internal glusterfs_devices='[ "/dev/xvdd" ]'
+# support3.$GUID.internal glusterfs_devices='[ "/dev/xvdd" ]'
