@@ -11,6 +11,7 @@
 #set environment variables on bastion host and all nodes, in this case GUID
 ansible localhost,all -m shell -a 'export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc'
 
+export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc
 echo "GUID is ${GUID}"
 
 #copy hosts file to new name for editing
