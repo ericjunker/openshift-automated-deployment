@@ -130,7 +130,23 @@ oc create -f templates/network-policy/allow-same-namespace.yaml
 #allow traffic from default (for routers, etc)
 oc create -f templates/network-policy/allow-default-namespace.yaml
 
-echo '************\nCreating some apps\n************'
+echo '************\nCreating some test apps\n************'
 #test out app creation
 oc new-project smoke-test
 oc new-app nodejs-mongo-persistent
+
+
+echo '************\nSetting up CI/CD Pipeline\n************'
+oc new-project cicd
+oc new-app jenkins-persistent
+echo "Waiting for Jenkins to spin up"
+sleep 60
+#now set up openshift-tasks
+oc new-project tasks
+oc new-app jboss-eap70-openshift:1.6~https://github.com/wkulhanek/openshift-tasks
+oc expose svc openshift-tasks
+#disable automatic triggers, since Jenkins will handle deployment
+oc set triggers dc openshift-tasks --manual
+#set permissions for Jenkins service account
+oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n tasks
+#next step: ssh into Jenkins and configure it that way
