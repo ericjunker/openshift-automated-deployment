@@ -24,8 +24,11 @@ ansible-playbook -f 20 -i inventory/hosts /usr/share/ansible/openshift-ansible/p
 #bring over .kube/config so that bastion can run oc commands as system:admin
 ansible masters[0] -b -m fetch -a "src=/root/.kube/config dest=/root/.kube/config flat=yes"
 
+#log in as system:admin
+oc login -u system:admin
+
 #add PVs to support node 1
-ssh support1.$GUID.internal 'sudo bash -s'< create_pvs.sh
+ssh support1.$GUID.internal 'sudo bash -s'< scripts/create_pvs.sh
 
 #now make PV files locally
 export volsize="5Gi"
@@ -91,7 +94,7 @@ ansible nodes -m shell -a "docker tag registry.access.redhat.com/openshift3/ose-
 #NetworkPolicy time!
 
 #We start in multitenant mode. Switch over like so: 
-sed sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /inventory/hosts
+sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /inventory/hosts
 ansible masters -m shell -a "sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /etc/origin/master/master-config.yaml"
 ansible nodes -m shell -a "sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /etc/origin/node/node-config.yaml"
 
@@ -111,38 +114,15 @@ ansible masters -m shell -a"systemctl start atomic-openshift-node" # (make sure 
 
 ansible nodes -m shell -a"systemctl start atomic-openshift-node"
 
-# #default deny all traffic
-# echo 'kind: NetworkPolicy
-# apiVersion: networking.k8s.io/v1
-# metadata:
-#   name: deny-by-default
-# spec:
-#   podSelector:
-#   ingress: []'
+#default deny all traffic
+oc create templates/network-policy/default-deny.yaml -f -
 
-# #allow traffic between pods in the same namespace
-# echo 'kind: NetworkPolicy
-# apiVersion: networking.k8s.io/v1
-# metadata:
-#   name: allow-same-namespace
-# spec:
-#   podSelector:
-#   ingress:
-#   - from:
-#     - podSelector: {}' | oc create -f -
 
-# #allow traffic from default (for routers, etc)
-#  echo 'kind: NetworkPolicy
-# apiVersion: networking.k8s.io/v1
-# metadata:
-#   name: allow-from-default-namespace
-# spec:
-#   podSelector:
-#   ingress:
-#   - from:
-#     - namespaceSelector:
-#         matchLabels:
-#           name: default' | oc create -f -
+#allow traffic between pods in the same namespace
+oc create templates/network-policy/allow-same-namespace.yaml -f -
+
+#allow traffic from default (for routers, etc)
+oc create templates/network-policy/allow-default-namespace.yaml -f -
 
 #test out app creation
 oc new-project smoke-test
