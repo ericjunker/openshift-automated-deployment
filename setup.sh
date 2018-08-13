@@ -28,6 +28,7 @@ ansible masters[0] -b -m fetch -a "src=/root/.kube/config dest=/root/.kube/confi
 #log in as system:admin
 oc login -u system:admin
 
+echo '************\Creating PVs\n************'
 #add PVs to support node 1
 ssh support1.$GUID.internal 'sudo bash -s'< scripts/create_pvs.sh
 
@@ -89,10 +90,14 @@ done;
 cat /root/pvs/* | oc create -f -
 
 #fix NFS persistent volume recycling
+
+echo '************\nSetting up NFS PV recycling\n************'
 ansible nodes -m shell -a "docker pull registry.access.redhat.com/openshift3/ose-recycler:latest"
 ansible nodes -m shell -a "docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v3.9.30"
 
 #NetworkPolicy time!
+
+echo '************\nSwitching networking from Multitenant to NetworkPolicy\n************'
 
 #We start in multitenant mode. Switch over like so: 
 sed -i -e 's/openshift-ovs-multitenant/openshift-ovs-networkpolicy/g' /inventory/hosts
@@ -116,15 +121,16 @@ ansible masters -m shell -a"systemctl start atomic-openshift-node" # (make sure 
 ansible nodes -m shell -a"systemctl start atomic-openshift-node"
 
 #default deny all traffic
-oc create templates/network-policy/default-deny.yaml -f -
+oc create -f templates/network-policy/default-deny.yaml
 
 
 #allow traffic between pods in the same namespace
-oc create templates/network-policy/allow-same-namespace.yaml -f -
+oc create -f templates/network-policy/allow-same-namespace.yaml
 
 #allow traffic from default (for routers, etc)
-oc create templates/network-policy/allow-default-namespace.yaml -f -
+oc create -f templates/network-policy/allow-default-namespace.yaml
 
+echo '************\nCreating some apps\n************'
 #test out app creation
 oc new-project smoke-test
 oc new-app nodejs-mongo-persistent
