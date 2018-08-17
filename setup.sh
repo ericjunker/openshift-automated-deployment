@@ -138,6 +138,7 @@ oc new-app nodejs-mongo-persistent
 
 echo '************\nSetting up CI/CD Pipeline\n************'
 oc new-project cicd
+#set up Jenkins with a PV
 oc new-app jenkins-persistent
 echo "Waiting for Jenkins to spin up"
 sleep 60
