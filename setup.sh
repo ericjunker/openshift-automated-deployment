@@ -139,7 +139,7 @@ oc new-app nodejs-mongo-persistent
 echo '************\nSetting up CI/CD Pipeline\n************'
 oc new-project cicd
 #set up Jenkins with a PV
-oc new-app jenkins-persistent
+oc new-app jenkins-persistent --param ENABLE_OAUTH=true
 echo "Waiting for Jenkins to spin up"
 sleep 60
 #now set up openshift-tasks
@@ -150,4 +150,9 @@ oc expose svc openshift-tasks
 oc set triggers dc openshift-tasks --manual
 #set permissions for Jenkins service account
 oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n tasks
-#next step: ssh into Jenkins and configure it that way
+#next step: configure Jenkins over CLI
+#pull down Jenkins CLI jar file from jenkins, which requires Java
+yum install -y java
+#jenkinsURL= $(oc get route jenkins --template='{{ .spec.host }}')
+wget http://$(oc get route jenkins --template='{{ .spec.host }}')/jnlpJars/jenkins-cli.jar 
+java -jar -s http://$(oc get route jenkins --template='{{ .spec.host }}') -uauth $(oc whoami):$(oc whoami -t) help
