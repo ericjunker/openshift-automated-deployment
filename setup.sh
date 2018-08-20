@@ -19,6 +19,9 @@ cp inventory/original_hosts inventory/hosts
 #swap the actual GUID for '$GUID'
 sed -i "s/\$GUID/${GUID}/g" inventory/hosts
 
+#install nano so that I can edit things easier when troubleshooting :)
+yum install -y nano
+
 #Run the setup!
 ansible-playbook -f 20 -i inventory/hosts /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
 
