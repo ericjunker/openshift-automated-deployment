@@ -153,6 +153,7 @@ oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n tasks
 #next step: configure Jenkins over CLI
 #pull down Jenkins CLI jar file from jenkins, which requires Java
 yum install -y java
+oc project cicd
 #jenkinsURL= $(oc get route jenkins --template='{{ .spec.host }}')
-wget http://$(oc get route jenkins --template='{{ .spec.host }}')/jnlpJars/jenkins-cli.jar 
-java -jar -s http://$(oc get route jenkins --template='{{ .spec.host }}') -uauth $(oc whoami):$(oc whoami -t) help
+wget http://jenkins-cicd.apps.$GUID.example.opentlc.com/jnlpJars/jenkins-cli.jar --no-check-certificate
+java -jar jenkins-cli.jar -s http://jenkins-cicd.apps.$GUID.example.opentlc.com -uauth $(oc whoami):$(oc whoami -t) help
