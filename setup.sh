@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#AUTOMATIC LOGGING!
+{
 #Required command line argument  ($1) is your GUID
 
 # if [ $# -eq 0 ]; then
@@ -161,3 +163,8 @@ oc project cicd
 #jenkinsURL= $(oc get route jenkins --template='{{ .spec.host }}')
 wget http://jenkins-cicd.apps.$GUID.example.opentlc.com/jnlpJars/jenkins-cli.jar --no-check-certificate
 java -jar jenkins-cli.jar -s http://jenkins-cicd.apps.$GUID.example.opentlc.com -uauth admin:password help
+
+
+
+
+} 2>&1 | tee logfile
