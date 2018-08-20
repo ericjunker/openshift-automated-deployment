@@ -14,6 +14,7 @@
 ansible localhost,all -m shell -a 'export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc'
 
 export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc
+source $HOME/.bashrc
 echo "GUID is ${GUID}"
 
 #copy hosts file to new name for editing
