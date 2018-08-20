@@ -147,7 +147,10 @@ oc new-project tasks
 oc new-app jboss-eap70-openshift:1.6~https://github.com/wkulhanek/openshift-tasks
 oc expose svc openshift-tasks
 #disable automatic triggers, since Jenkins will handle deployment
-oc set triggers dc openshift-tasks --manual
+#oc set triggers dc openshift-tasks --manual
+
+#I think this is a CICD build by default? It builds and deploys on its own and will rebuild if the underlying git repo changes
+
 #set permissions for Jenkins service account
 oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n tasks
 #next step: configure Jenkins over CLI
