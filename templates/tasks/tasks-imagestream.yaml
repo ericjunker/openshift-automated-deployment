@@ -1,0 +1,24 @@
+kind: ImageStream
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: openshift-tasks
+  name: openshift-tasks
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - annotations: null
+    from:
+      kind: DockerImage
+      name: docker-registry.default.svc:5000/tasks/openshift-tasks:latest
+    generation: null
+    importPolicy: {}
+    name: latest
+    referencePolicy:
+      type: ""
+status:
+  dockerImageRepository: ""

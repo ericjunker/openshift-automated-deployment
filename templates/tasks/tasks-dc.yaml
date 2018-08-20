@@ -1,0 +1,47 @@
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: openshift-tasks
+    name: openshift-tasks
+  spec:
+    replicas: 1
+    selector:
+      app: openshift-tasks
+      deploymentconfig: openshift-tasks
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: openshift-tasks
+          deploymentconfig: openshift-tasks
+      spec:
+        containers:
+        - image: openshift-tasks:latest
+          name: openshift-tasks
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8443
+            protocol: TCP
+          - containerPort: 8778
+            protocol: TCP
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - openshift-tasks
+        from:
+          kind: ImageStreamTag
+          name: openshift-tasks:latest
+      type: ImageChange
