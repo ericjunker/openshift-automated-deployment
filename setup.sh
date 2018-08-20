@@ -139,7 +139,8 @@ oc new-app nodejs-mongo-persistent
 echo '************\nSetting up CI/CD Pipeline\n************'
 oc new-project cicd
 #set up Jenkins with a PV
-oc new-app jenkins-persistent --param ENABLE_OAUTH=true
+#disable OAuth since our cluster doesn't use it. creds are admin:password
+oc new-app jenkins-persistent --param MEMORY_LIMIT=1512Mi --param ENABLE_OAUTH=false
 echo "Waiting for Jenkins to spin up"
 sleep 60
 #now set up openshift-tasks
@@ -156,4 +157,4 @@ yum install -y java
 oc project cicd
 #jenkinsURL= $(oc get route jenkins --template='{{ .spec.host }}')
 wget http://jenkins-cicd.apps.$GUID.example.opentlc.com/jnlpJars/jenkins-cli.jar --no-check-certificate
-java -jar jenkins-cli.jar -s http://jenkins-cicd.apps.$GUID.example.opentlc.com -uauth $(oc whoami):$(oc whoami -t) help
+java -jar jenkins-cli.jar -s http://jenkins-cicd.apps.$GUID.example.opentlc.com -uauth admin:password help
