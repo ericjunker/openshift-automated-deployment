@@ -1,6 +1,6 @@
 # openshift-automated-deployment
 
-This script automatically deploys Openshift in an OpenTLC lab environment.
+This script automatically deploys Openshift in an OpenTLC lab environment. The cluster contains a CICD pipeline deploying the [Openshift Tasks](https://github.com/ericjunker/openshift-tasks) application, a full metrics and logging setup, and multitenancy support.
 
 
 Prerequisites:
