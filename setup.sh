@@ -144,15 +144,17 @@ echo "Waiting for Jenkins to spin up"
 sleep 60
 #now set up openshift-tasks
 oc new-project tasks
-oc new-app jboss-eap70-openshift:1.6~https://github.com/wkulhanek/openshift-tasks
+#set permissions for Jenkins service account
+oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n tasks
+#oc new-app jboss-eap70-openshift:1.6~https://github.com/wkulhanek/openshift-tasks
+#use my own fork, which contains the Jenkinsfile in templates/tasks, so Openshift automatically goes to a pipeline strategy
+oc new-app jboss-eap70-openshift:1.6~https://github.com/ericjunker/openshift-tasks
 oc expose svc openshift-tasks
 #disable automatic triggers, since Jenkins will handle deployment
 #oc set triggers dc openshift-tasks --manual
 
 #I think this is a CICD build by default? It builds and deploys on its own and will rebuild if the underlying git repo changes
 
-#set permissions for Jenkins service account
-oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n tasks
 #next step: configure Jenkins over CLI
 #pull down Jenkins CLI jar file from jenkins, which requires Java
 # yum install -y java
