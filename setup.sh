@@ -155,14 +155,12 @@ oc expose svc openshift-tasks
 
 #I think this is a CICD build by default? It builds and deploys on its own and will rebuild if the underlying git repo changes
 
-#next step: configure Jenkins over CLI
 #pull down Jenkins CLI jar file from jenkins, which requires Java
 # yum install -y java
 # oc project cicd
 # wget http://jenkins-cicd.apps.$GUID.example.opentlc.com/jnlpJars/jenkins-cli.jar --no-check-certificate
 # java -jar jenkins-cli.jar -s http://jenkins-cicd.apps.$GUID.example.opentlc.com -uauth admin:password help
 
-#doing Jenkins configuration sucks, let's try an alternate approach
 
 
 } 2>&1 | tee logfile
